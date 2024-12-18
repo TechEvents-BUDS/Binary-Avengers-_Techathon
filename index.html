@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Mental Health Tracker</title>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Mental Health Tracker</h1>
+            <p>Your journey to better mental well-being starts here.</p>
+        </header>
+
+        <section class="features">
+            <h2>Features</h2>
+            <div class="feature">
+                <img src="https://via.placeholder.com/100" alt="Track Mood" />
+                <h3>Track Your Mood</h3>
+                <p>Log your daily mood and notes to understand your emotional patterns.</p>
+            </div>
+            <div class="feature">
+                <img src="https://via.placeholder.com/100" alt="View Entries" />
+                <h3>View Entries</h3>
+                <p>Access your mood entries and reflect on your mental health journey.</p>
+            </div>
+            <div class="feature">
+                <img src="https://via.placeholder.com/100" alt="Statistics" />
+                <h3>Statistics</h3>
+                <p>Get insights into your mood trends over time.</p>
+            </div>
+        </section>
+
+        <section class="statistics">
+            <h2>Your Mood Statistics</h2>
+            <p>Total Entries: <strong>{{ total_entries }}</strong></p>
+            <p>Average Mood: <strong>{{ average_mood | round(2) }}</strong></p>
+            <
