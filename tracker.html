@@ -3,16 +3,236 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <title>Mood Tracker</title>
+    <style>
+        /* Google Font */
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+        /* Global Styles */
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #e3f2fd, #f5f5f5);
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        h1, h2 {
+            text-align: center;
+            font-weight: 700;
+            color: #1e88e5;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 2rem;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            margin-top: 30px;
+        }
+
+        /* Form Styles */
+        form {
+            margin-top: 20px;
+        }
+
+        label {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #444;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        input, select, textarea, button {
+            width: 100%;
+            padding: 12px;
+            font-size: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        input[type="date"],
+        input[type="number"],
+        select,
+        textarea {
+            background-color: #f8f9fa;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: #1e88e5;
+            box-shadow: 0 0 8px rgba(30, 136, 229, 0.2);
+        }
+
+        textarea {
+            resize: none;
+            height: 100px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #42a5f5, #1e88e5);
+            color: white;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s;
+        }
+
+        button:hover {
+            background: linear-gradient(135deg, #1e88e5, #1565c0);
+            transform: scale(1.02);
+        }
+
+        /* Flash Messages */
+        .flashes {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 20px;
+        }
+
+        .flashes li {
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        .flashes .success {
+            background-color: #c8e6c9;
+            color: #388e3c;
+        }
+
+        .flashes .error {
+            background-color: #ffcdd2;
+            color: #d32f2f;
+        }
+
+        /* Mood Entries */
+        .entry-list {
+            list-style: none;
+            padding: 0;
+            margin: 20px 0;
+        }
+
+        .entry-list li {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #e0e0e0;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .entry-list li strong {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .entry-actions {
+            margin-top: 10px;
+        }
+
+        .edit-button, .delete-button {
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            margin-right: 10px;
+        }
+
+        .edit-button {
+            background-color: #ffb74d;
+            color: #fff;
+        }
+
+        .edit-button:hover {
+            background-color: #ffa726;
+        }
+
+        .delete-button {
+            background-color: #e57373;
+            color: #fff;
+        }
+
+        .delete-button:hover {
+            background-color: #ef5350;
+        }
+
+        /* No Entries */
+        .no-entries {
+            text-align: center;
+            color: #555;
+            font-style: italic;
+            margin-top: 20px;
+        }
+
+        /* Back Button */
+        .button {
+            display: inline-block;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #42a5f5, #1e88e5);
+            color: white;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 0.9rem;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background 0.3s ease, transform 0.2s;
+        }
+
+        .button:hover {
+            background: linear-gradient(135deg, #1e88e5, #1565c0);
+            transform: scale(1.02);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.6rem;
+            }
+
+            h2 {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <h1>Mood Tracker</h1>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul class="flashes">
+                {% for category, message in messages %}
+                    <li class="{{ category }}">{{ message }}</li>
+                {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+
+        <!-- Form to Add Mood Entry -->
         <form method="POST">
             <label for="date">Date:</label>
             <input type="date" id="date" name="date" required>
-            
+
             <label for="mood">Mood:</label>
             <select id="mood" name="mood" required>
                 <option value="">Select your mood</option>
@@ -23,24 +243,39 @@
                 <option value="Sad">Sad</option>
                 <option value="Angry">Angry</option>
             </select>
-            
+
+            <label for="hours_slept">Hours Slept:</label>
+            <input type="number" id="hours_slept" name="hours_slept" min="0" max="24" step="0.1" required>
+
             <label for="notes">Notes:</label>
             <textarea id="notes" name="notes" placeholder="Any additional notes..."></textarea>
             <button type="submit">Add Entry</button>
         </form>
 
+        <!-- Mood Entries -->
         <h2>Your Entries</h2>
-        <ul class="entry-list">
-            {% for entry in entries %}
-                <li>
-                    <strong>Date:</strong> {{ entry.date }} <br>
-                    <strong>Mood:</strong> {{ entry.mood }} <br>
-                    <strong>Notes:</strong> {{ entry.notes }} <br>
-                    <a href="{{ url_for('edit_entry', entry_id=entry.id) }}" class="edit-button">Edit</a>
-                    <a href="{{ url_for('delete_entry', entry_id=entry.id) }}" class="delete-button">Delete</a>
-                </li>
-            {% endfor %}
-        </ul>
+        {% if entries %}
+            <ul class="entry-list">
+                {% for entry in entries %}
+                    <li>
+                        <strong>Date:</strong> {{ entry.date.strftime('%Y-%m-%d') }} <br>
+                        <strong>Mood:</strong> {{ entry.mood }} <br>
+                        <strong>Hours Slept:</strong> {{ entry.hours_slept }} <br>
+                        <strong>Notes:</strong> {{ entry.notes }} <br>
+                        <div class="entry-actions">
+                            <form method="GET" action="{{ url_for('edit_entry', entry_id=entry.id) }}" style="display:inline;">
+                                <button type="submit" class="edit-button">Edit</button>
+                            </form>
+                            <form method="POST" action="{{ url_for('delete_entry', entry_id=entry.id) }}" style="display:inline;">
+                                <button type="submit" class="delete-button">Delete</button>
+                            </form>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="no-entries">No entries available. Start tracking your mood!</p>
+        {% endif %}
         <a class="button" href="{{ url_for('index') }}">Back to Home</a>
     </div>
 </body>
